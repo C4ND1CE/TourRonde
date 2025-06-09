@@ -262,14 +262,10 @@ def page_qualite():
     st.markdown('<div class="section">', unsafe_allow_html=True)
     st.markdown("<h2>Liste d'Équipements à Vérifier</h2>", unsafe_allow_html=True)
 
-    # Sélectionnez une date pour voir les contrôles planifiés
     selected_date = st.date_input("Sélectionnez une date", datetime.now(), key="date_input_qualite")
-
-    # Récupérer les contrôles pour la date sélectionnée
     selected_date_str = selected_date.strftime("%Y-%m-%d")
     controls_for_date = st.session_state.controls.get(selected_date_str, [])
 
-    # Afficher les contrôles planifiés pour la date sélectionnée
     for control in controls_for_date:
         st.markdown(f"### Contrôle: {control}")
         st.markdown("#### Équipements à contrôler:")
@@ -277,28 +273,28 @@ def page_qualite():
         for equipement in CONTROLES_QUALITE.get(control, []):
             equipement_num = int(equipement.split()[1])
 
-            if equipement_num < 4:
-                result = st.selectbox(f"{equipement}", ["OK", "Not OK"], key=f"eq_{equipement_num}_{control}")
-            elif equipement_num < 6:
-                result = st.radio(f"{equipement}", ["😞", "😐", "😊"], horizontal=True, key=f"eq_{equipement_num}_{control}")
-            elif equipement_num < 9:
-                result = st.number_input(f"{equipement}", key=f"eq_{equipement_num}_{control}")
-            else:
-                result = st.slider(f"{equipement}", 0, 10, 5, key=f"eq_{equipement_num}_{control}")
+            # Utilisez une clé unique pour chaque widget
+            unique_key = f"{equipement_num}_{control}_{selected_date_str}"
 
-            # Enregistrer le résultat du contrôle
+            if equipement_num < 4:
+                result = st.selectbox(f"{equipement}", ["OK", "Not OK"], key=f"select_{unique_key}")
+            elif equipement_num < 6:
+                result = st.radio(f"{equipement}", ["😞", "😐", "😊"], horizontal=True, key=f"radio_{unique_key}")
+            elif equipement_num < 9:
+                result = st.number_input(f"{equipement}", key=f"number_{unique_key}")
+            else:
+                result = st.slider(f"{equipement}", 0, 10, 5, key=f"slider_{unique_key}")
+
             if selected_date_str not in st.session_state.control_results:
                 st.session_state.control_results[selected_date_str] = {}
             st.session_state.control_results[selected_date_str][equipement] = result
 
     if st.button("Valider", key="btn_valider_qualite"):
         st.success("Résultats des contrôles enregistrés avec succès!")
-        # Vous pouvez ajouter ici une logique pour traiter les résultats enregistrés
 
     if st.button("Retour", key="btn_retour_qualite"):
         st.session_state.page = "Accueil"
     st.markdown("</div>", unsafe_allow_html=True)
-
 
 
 def display_calendar(year, month):
