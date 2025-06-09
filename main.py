@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 from calendar import monthrange
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 STYLE = """
 <style>
